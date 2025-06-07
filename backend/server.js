@@ -19,11 +19,11 @@ const io = new Server(server, {
 });
 
 
-io.use(async (socket, next) => {
+io.use(async(socket, next) => {
 
     try {
 
-        const token = socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(' ')[ 1 ];
+        const token = socket.handshake.auth && socket.handshake.auth.token || socket.handshake.headers['auth-token'];
         const projectId = socket.handshake.query.projectId;
 
         if (!mongoose.Types.ObjectId.isValid(projectId)) {
