@@ -28,7 +28,11 @@ const Login = () => {
 
             navigate('/')
         }).catch((err) => {
-            console.log(err.response.data)
+           if (err.response && err.response.data) {
+                console.log(err.response.data)
+            } else {
+                console.log("Server not responding or network error", err.message)
+            }
         })
     }
 

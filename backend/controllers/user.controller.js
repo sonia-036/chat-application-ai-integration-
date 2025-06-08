@@ -4,9 +4,9 @@ import { validationResult } from 'express-validator';
 import redisClient from '../services/redis.service.js';
 
 
-export const createUserController = async (req, res) => {
+export const createUserController = async(req, res) => {
 
-    const errors = validationResult(req);
+    const errors = validationResult(req)
 
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -24,7 +24,7 @@ export const createUserController = async (req, res) => {
     }
 }
 
-export const loginController = async (req, res) => {
+export const loginController = async(req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -66,7 +66,7 @@ export const loginController = async (req, res) => {
     }
 }
 
-export const profileController = async (req, res) => {
+export const profileController = async(req, res) => {
 
     res.status(200).json({
         user: req.user
@@ -74,10 +74,10 @@ export const profileController = async (req, res) => {
 
 }
 
-export const logoutController = async (req, res) => {
+export const logoutController = async(req, res) => {
     try {
 
-        const token = req.cookies.token || req.headers.authorization.split(' ')[ 1 ];
+        const token = req.cookies.token || req.headers.authorization.split(' ')[1];
 
         redisClient.set(token, 'logout', 'EX', 60 * 60 * 24);
 
@@ -92,7 +92,7 @@ export const logoutController = async (req, res) => {
     }
 }
 
-export const getAllUsersController = async (req, res) => {
+export const getAllUsersController = async(req, res) => {
     try {
 
         const loggedInUser = await userModel.findOne({

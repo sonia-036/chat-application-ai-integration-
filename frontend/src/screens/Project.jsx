@@ -5,7 +5,7 @@ import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
 import hljs from 'highlight.js';
-import { getWebContainer } from '../config/webcontainer'
+import { getWebContainer } from '../config/webContainer'
 
 
 function SyntaxHighlightedCode(props) {
@@ -65,7 +65,7 @@ const Project = () => {
 
 
     function addCollaborators() {
-
+         console.log("adding from project:", location.state.project._id, "with users: ", Array.from(selectedUserId), "for the user: ", selectedUserId);
         axios.put("/projects/add-user", {
             projectId: location.state.project._id,
             users: Array.from(selectedUserId)
@@ -87,7 +87,7 @@ const Project = () => {
         })
         setMessages(prevMessages => [ ...prevMessages, { sender: user, message } ]) // Update messages state
         setMessage("")
-
+      
     }
 
     function WriteAiMessage(message) {

@@ -4,7 +4,7 @@ import userModel from '../models/user.model.js';
 import { validationResult } from 'express-validator';
 
 
-export const createProject = async (req, res) => {
+export const createProject = async(req, res) => {
 
     const errors = validationResult(req);
 
@@ -31,7 +31,7 @@ export const createProject = async (req, res) => {
 
 }
 
-export const getAllProject = async (req, res) => {
+export const getAllProject = async(req, res) => {
     try {
 
         const loggedInUser = await userModel.findOne({
@@ -52,7 +52,8 @@ export const getAllProject = async (req, res) => {
     }
 }
 
-export const addUserToProject = async (req, res) => {
+export const addUserToProject = async(req, res) => {
+    console.log("add user error");
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -86,7 +87,7 @@ export const addUserToProject = async (req, res) => {
 
 }
 
-export const getProjectById = async (req, res) => {
+export const getProjectById = async(req, res) => {
 
     const { projectId } = req.params;
 
@@ -105,7 +106,7 @@ export const getProjectById = async (req, res) => {
 
 }
 
-export const updateFileTree = async (req, res) => {
+export const updateFileTree = async(req, res) => {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
