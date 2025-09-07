@@ -13,19 +13,14 @@ const UserAuth = ({ children }) => {
 
 
     useEffect(() => {
-        if (user) {
-            setLoading(false)
-        }
+        const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
 
-        if (!token) {
+        if (!user || !token) {
             navigate('/login')
-        }
+        } else setLoading(false)
 
-        if (!user) {
-            navigate('/login')
-        }
-
-    }, [])
+    }, [user, navigate])
 
     if (loading) {
         return <div>Loading...</div>

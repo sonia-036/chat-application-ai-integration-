@@ -26,6 +26,18 @@ function SyntaxHighlightedCode(props) {
 
 const Project = () => {
 
+    // On mount, load user from localStorage if exists
+    useEffect(() => {
+        const token = localStorage.getItem('token')
+        if (token && !user) {
+            const storedUser = localStorage.getItem('user')
+            if (storedUser) {
+                setUser(JSON.parse(storedUser))
+            }
+        }
+    }, [])
+
+
     const location = useLocation()
 
     const [ isSidePanelOpen, setIsSidePanelOpen ] = useState(false)
@@ -33,7 +45,7 @@ const Project = () => {
     const [ selectedUserId, setSelectedUserId ] = useState(new Set()) // Initialized as Set
     const [ project, setProject ] = useState(location.state.project)
     const [ message, setMessage ] = useState('')
-    const { user } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
     const messageBox = React.createRef()
 
     const [ users, setUsers ] = useState([])
@@ -59,8 +71,19 @@ const Project = () => {
 
             return newSelectedUserId;
         });
+    }
 
+    const handleLogout = () => {
+        // Perform logout logic here
+        axios.post(`${import.meta.env.VITE_API_URL}/users/logout`).then(res => {
+            console.log(res.data)
+        }).catch(err => {
+            console.log(err)
+        })
 
+        // Clear localStorage and reset user context
+        localStorage.removeItem('token')
+        setUser(null)
     }
 
 
@@ -79,15 +102,29 @@ const Project = () => {
 
     }
 
-    const send = () => {
+    const send = async () => {
+        try {
+            // Persist message in backend
+            const res = await axios.post('/messages', {
+                projectId: project._id,
+                sender: {
+                    _id: user._id,
+                    email: user.email
+                },
+                message
+            })
 
-        sendMessage('project-message', {
-            message,
-            sender: user
-        })
-        setMessages(prevMessages => [ ...prevMessages, { sender: user, message } ]) // Update messages state
-        setMessage("")
-      
+            const savedMessage = res.data
+
+            // Emit via socket for real-time updates
+            sendMessage('project-message', savedMessage)
+
+            // Update local state
+            setMessages(prevMessages => [ ...prevMessages, savedMessage ])
+            setMessage("")
+        } catch (err) {
+            console.error('Error sending message:', err)
+        }
     }
 
     function WriteAiMessage(message) {
@@ -110,6 +147,12 @@ const Project = () => {
     }
 
     useEffect(() => {
+        // Fetch existing messages from backend
+        axios.get(`/messages/${project._id}`).then(res => {
+            setMessages(res.data)
+        }).catch(err => {
+            console.error('Error fetching messages:', err)
+        })
 
         initializeSocket(project._id)
 
@@ -192,9 +235,14 @@ const Project = () => {
                         <i className="ri-add-fill mr-1"></i>
                         <p>Add collaborator</p>
                     </button>
-                    <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} className='p-2'>
+                    <div>
+                        <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)} className='p-2'>
                         <i className="ri-group-fill"></i>
                     </button>
+                    <button onClick={handleLogout} className='p-2'>
+                        <i class="ri-logout-box-r-line"></i>
+                    </button>
+                    </div>
                 </header>
                 <div className="conversation-area pt-14 pb-10 flex-grow flex flex-col h-full relative">
 
