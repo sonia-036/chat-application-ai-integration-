@@ -6,7 +6,12 @@
         "config": { "includeFiles": ["dist/**"] }
     }],
     "routes": [{
-        "src": "/(.*)",
-        "dest": "server.js"
-    }]
+            "src": "/routes/(.*)",
+            "dest": "server.js"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "server.js"
+        }
+    ]
 }
